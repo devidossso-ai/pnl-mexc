@@ -1,67 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>MEXC PNL 4-line Template</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
       background: #000;
-      color: #fff;
       font-family: 'Inter', Arial, sans-serif;
+      color: #fff;
       min-height: 100vh;
       padding: 20px;
-    }
-
-    .controls {
-      width: 420px;
-      background: #111;
-      padding: 16px;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      position: sticky;
-      top: 12px;
-      max-height: calc(100vh - 24px);
-      overflow: auto;
-    }
-
-    label { font-size: 14px; color: #bbb; }
-    input, select {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      color: #0f0;
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      outline: none;
-      width: 100%;
-    }
-
-    button {
-      background: #00bfff;
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    button:hover { background: #0099cc; }
-
-    .stage {
-      width: min(1188px, 100%);
-      position: relative;
     }
 
     #card {
@@ -72,75 +31,148 @@
       background-repeat: no-repeat;
       background-position: center;
       background-color: #000;
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform-origin: top left;
+      position: relative;
+      overflow: hidden;
     }
 
     .overlay {
       position: absolute;
       inset: 0;
+      color: white;
+      font-weight: 500;
     }
 
     .date-shared {
       position: absolute;
-      top: 110px;
-      left: 230px;
+      top: 7.9%;
+      left: 19.4%;
       font-size: 28px;
       color: #6E7684;
-      letter-spacing: 0.045em;
+      letter-spacing: 0.035em;
+      white-space: nowrap;
     }
 
     .date-range {
       position: absolute;
-      top: 550px;
-      left: 50px;
+      top: 39.5%;
+      left: 4.2%;
       font-size: 28px;
       color: #6E7684;
-      letter-spacing: 0.045em;
+      letter-spacing: 0.035em;
+      white-space: nowrap;
     }
 
     .percent {
       position: absolute;
-      top: 645px;
-      left: 50px;
+      top: 46.3%;
+      left: 4.2%;
       font-size: 75px;
       color: #00BF67;
       font-weight: 700;
       letter-spacing: 0.03em;
+      white-space: nowrap;
     }
 
     .usdt {
       position: absolute;
-      top: 746px;
-      left: 50px;
+      top: 53.6%;
+      left: 4.2%;
       font-size: 45px;
       color: #00BF67;
       font-weight: 600;
       letter-spacing: 0.03em;
+      white-space: nowrap;
     }
 
-    @media (max-width: 992px) {
-      body {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 12px;
-        gap: 12px;
-      }
-      .controls {
+    /* ✅ Реферальный код — пропорционально */
+    #refText {
+      position: absolute;
+      left: 41%;
+      top: 88.3%;
+      font-size: 45px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #fff;
+      white-space: nowrap;
+      transform: translateY(-10%);
+    }
+
+    /* ✅ QR — пропорционально */
+    #qrImg {
+      position: absolute;
+      right: 4%;
+      bottom: 3%;
+      width: 12%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .controls {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 1188px;
+      background: #111;
+      padding: 15px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    label { font-size: 14px; color: #bbb; }
+
+    input, select {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #0f0;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 18px;
+      outline: none;
+    }
+
+    button {
+      background: #00bfff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+      width: 100%;
+      font-size: 18px;
+    }
+    button:hover { background: #0099cc; }
+
+    /* ✅ Адаптация под телефоны */
+    @media (max-width: 600px) {
+      #card {
         width: 100%;
-        position: static;
-        max-height: none;
+        height: auto;
+        aspect-ratio: 1188 / 1392;
       }
-      .stage {
-        margin: 0 auto;
-      }
+      input, select, button { font-size: 16px; }
     }
   </style>
 </head>
-
 <body>
+
+  <div id="card">
+    <div class="overlay">
+      <div class="date-shared" id="dateShared"></div>
+      <div class="date-range" id="dateRange"></div>
+      <div class="percent" id="percent"></div>
+      <div class="usdt" id="usdt"></div>
+
+      <!-- ✅ Реферальный код на фоне -->
+      <div id="refText"></div>
+
+      <!-- ✅ QR на фоне -->
+      <img id="qrImg" src="">
+    </div>
+  </div>
 
   <div class="controls">
     <label>Дата "Поделились"</label>
@@ -156,8 +188,7 @@
     <input id="inputUSDT" placeholder="+23 428,24 USDT">
 
     <label>Реферальный код (1–12)</label>
-    <select id="refSelect">
-      <option value="">— выбрать —</option>
+    <select id="inputRef">
       <option value="1fq51">1</option>
       <option value="1uoHK">2</option>
       <option value="1RWKx">3</option>
@@ -176,78 +207,26 @@
     <button onclick="takeScreenshot()">Скачать</button>
   </div>
 
-  <div class="stage" id="stage">
-    <div id="card">
-      <div class="overlay">
-        <div class="date-shared" id="dateShared"></div>
-        <div class="date-range" id="dateRange"></div>
-        <div class="percent" id="percent"></div>
-        <div class="usdt" id="usdt"></div>
-
-        <!-- Реф-код: подправлено положение -->
-        <div id="refText"
-          style="position:absolute; left:485px; top:1228px; font-size:45px; font-weight:700; letter-spacing:.02em; color:#fff;">
-        </div>
-
-        <!-- QR -->
-        <img id="qrImg"
-          src=""
-          style="position:absolute; right:52px; bottom:42px; width:144px; height:144px; object-fit:contain;">
-      </div>
-    </div>
-  </div>
-
   <script>
-    const BASE_W = 1188;
-    const BASE_H = 1392;
-
     function updateCard() {
       document.getElementById('dateShared').innerText = document.getElementById('inputDateShared').value;
       document.getElementById('dateRange').innerText = document.getElementById('inputDateRange').value;
       document.getElementById('percent').innerText = document.getElementById('inputPercent').value;
       document.getElementById('usdt').innerText = document.getElementById('inputUSDT').value;
 
-      const refId = document.getElementById('refSelect').value;
-      if (refId) {
-        document.getElementById('refText').innerText = refId.toUpperCase();
-        document.getElementById('qrImg').src = `./qrcodes/${refId}.png`;
-      } else {
-        document.getElementById('refText').innerText = '';
-        document.getElementById('qrImg').src = '';
-      }
+      const ref = document.getElementById('inputRef').value;
+      document.getElementById('refText').innerText = ref.toUpperCase();
+      document.getElementById('qrImg').src = "./" + ref + ".png";
     }
-
-    function fitCard() {
-      const stage = document.getElementById('stage');
-      const card = document.getElementById('card');
-      const w = stage.clientWidth;
-      const scale = Math.min(1, w / BASE_W);
-      card.style.transform = `scale(${scale})`;
-      stage.style.height = `${BASE_H * scale}px`;
-    }
-
-    window.addEventListener('load', fitCard);
-    window.addEventListener('resize', fitCard);
 
     function takeScreenshot() {
-      const stage = document.getElementById('stage');
-      const card = document.getElementById('card');
-      const old = card.style.transform;
-
-      card.style.transform = 'none';
-      stage.style.height = `${BASE_H}px`;
-
-      html2canvas(card, { scale: 2 }).then(canvas => {
+      html2canvas(document.getElementById("card"), { scale: 2 }).then(canvas => {
         const link = document.createElement("a");
         link.download = "pnl-card.png";
-        link.href = canvas.toDataURL("image/png");
+        link.href = canvas.toDataURL();
         link.click();
-
-        card.style.transform = old;
-        fitCard();
       });
     }
   </script>
-
 </body>
 </html>
