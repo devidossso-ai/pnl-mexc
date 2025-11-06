@@ -85,27 +85,24 @@
     }
 
     /* ✅ Реферальный код — пропорционально */
-    #refText {
-      position: absolute;
-      left: 41%;
-      top: 88.3%;
-      font-size: 45px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      color: #fff;
-      white-space: nowrap;
-      transform: translateY(-10%);
-    }
+   #refText {
+  position: absolute;
+  left: calc(470 / 1188 * 100%);
+  top: calc(1230 / 1392 * 100%);
+  font-size: 45px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
 
-    /* ✅ QR — пропорционально */
-    #qrImg {
-      position: absolute;
-      right: 4%;
-      bottom: 3%;
-      width: 12%;
-      height: auto;
-      object-fit: contain;
-    }
+#qrImg {
+  position: absolute;
+  left: calc(1020 / 1188 * 100%);
+  top: calc(1190 / 1392 * 100%);
+  width: calc(144 / 1188 * 100%);
+  height: auto;
+}
+
 
     .controls {
       margin-top: 20px;
