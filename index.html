@@ -1,23 +1,72 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MEXC PNL 4-line Template</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: center;
       background: #000;
-      font-family: 'Inter', Arial, sans-serif;
       color: #fff;
+      font-family: 'Inter', Arial, sans-serif;
       min-height: 100vh;
       padding: 20px;
     }
+
+    /* ===== Лэйаут: слева форма, справа карточка (на десктопе) ===== */
+    .controls {
+      width: 420px;
+      background: #111;
+      padding: 16px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: sticky;
+      top: 12px;
+      max-height: calc(100vh - 24px);
+      overflow: auto;
+    }
+    label { font-size: 14px; color: #bbb; }
+    input, select {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #0f0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      width: 100%;
+    }
+    button {
+      background: #00bfff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background: #0099cc; }
+
+    /* ===== Сцена для масштабирования ===== */
+    .stage {
+      /* контейнер под карточку; задаём ширину по контейнеру */
+      width: min(1188px, 100%);
+      /* подстраиваем высоту скриптом под масштаб */
+      position: relative;
+    }
+
+    /* Исходные размеры карточки остаются константами */
     #card {
       width: 1188px;
       height: 1392px;
@@ -26,9 +75,14 @@
       background-repeat: no-repeat;
       background-position: center;
       background-color: #000;
-      position: relative;
-      overflow: hidden;
+      position: absolute;   /* важно: внутри stage */
+      top: 0;
+      left: 0;
+
+      /* масштабируем всю карточку целиком */
+      transform-origin: top left;
     }
+
     .overlay {
       position: absolute;
       inset: 0;
@@ -54,101 +108,60 @@
     }
     .percent {
       position: absolute;
-      top: 610px;
+      top: 645px;
       left: 50px;
       font-size: 75px;
-      color: #00BF67;
+      color: #00BF67;     /* твой финальный зелёный */
       font-weight: 700;
-      letter-spacing: 0.045em;
+      letter-spacing: 0.03em;
     }
     .usdt {
       position: absolute;
-      top: 727px;
+      top: 746px;
       left: 50px;
-      font-size: 50px;
+      font-size: 45px;
       color: #00BF67;
       font-weight: 600;
-      letter-spacing: 0.045em;
+      letter-spacing: 0.03em;
     }
 
-    /* ---- новая часть ---- */
-    .ref-code {
-      position: absolute;
-      top: 1195px;  /* выровнено под "Реферальный код" на фоне */
-      left: 450px;  /* отступ от надписи */
-      font-size: 42px;
-      color: #ffffff;
-      font-weight: 600;
-      letter-spacing: 0.045em;
+    /* ===== Мобильная адаптация ===== */
+    @media (max-width: 992px) {
+      body {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px;
+        gap: 12px;
+      }
+      .controls {
+        width: 100%;
+        position: static;
+        max-height: none;
+      }
+      .stage {
+        margin: 0 auto;
+      }
     }
-    .qr {
-      position: absolute;
-      bottom: 60px;
-      right: 70px;
-      width: 150px;
-      height: 150px;
-      object-fit: contain;
-      display: none; /* пока не выбрана рефка */
-    }
-
-    .controls {
-      margin-top: 20px;
-      width: 1188px;
-      background: #111;
-      padding: 15px;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    label { font-size: 14px; color: #bbb; }
-    input, select {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      color: #0f0;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 16px;
-      outline: none;
-    }
-    button {
-      background: #00bfff;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-    button:hover { background: #0099cc; }
   </style>
 </head>
 <body>
-  <div id="card">
-    <div class="overlay">
-      <div class="date-shared" id="dateShared"></div>
-      <div class="date-range" id="dateRange"></div>
-      <div class="percent" id="percent"></div>
-      <div class="usdt" id="usdt"></div>
-      <div class="ref-code" id="refCode"></div>
-      <img class="qr" id="qrImage" src="" alt="QR">
-    </div>
-  </div>
 
+  <!-- ФОРМА -->
   <div class="controls">
     <label>Дата "Поделились"</label>
     <input id="inputDateShared" placeholder="2025-09-24 03:21:28">
+
     <label>Дата под 'Совокупный PNL'</label>
     <input id="inputDateRange" placeholder="2025/09/18–2025/09/24 (UTC+8)">
+
     <label>Процент прибыли</label>
     <input id="inputPercent" placeholder="+264,23%">
+
     <label>Прибыль в USDT</label>
     <input id="inputUSDT" placeholder="+23 428,24 USDT">
 
-    <label>Выбери реферальный код</label>
+    <label>Реферальный код</label>
     <select id="refSelect">
-      <option value="">-- выбери номер (1–12) --</option>
       <option value="1fq51">1</option>
       <option value="1uoHK">2</option>
       <option value="1RWKx">3</option>
@@ -164,42 +177,89 @@
     </select>
 
     <button onclick="updateCard()">Обновить</button>
-    <button onclick="takeScreenshot()">Сделать скриншот</button>
+    <button onclick="takeScreenshot()">Скачать картинку</button>
+  </div>
+
+  <!-- СЦЕНА + КАРТОЧКА -->
+  <div class="stage" id="stage">
+    <div id="card">
+      <div class="overlay">
+        <div class="date-shared" id="dateShared"></div>
+        <div class="date-range" id="dateRange"></div>
+        <div class="percent" id="percent"></div>
+        <div class="usdt" id="usdt"></div>
+
+        <!-- реф-код справа внизу (после фразы на фоне) -->
+        <div id="refText"
+             style="position:absolute; left:455px; top:1238px; font-size:45px; font-weight:700; letter-spacing:.02em; color:#fff;">
+        </div>
+
+        <!-- QR справа внизу -->
+        <img id="qrImg"
+             src=""
+             alt=""
+             style="position:absolute; right:52px; bottom:42px; width:144px; height:144px; object-fit:contain;"/>
+      </div>
+    </div>
   </div>
 
   <script>
+    // ====== Обновление текстов ======
     function updateCard() {
       document.getElementById('dateShared').innerText = document.getElementById('inputDateShared').value;
-      document.getElementById('dateRange').innerText = document.getElementById('inputDateRange').value;
-      document.getElementById('percent').innerText = document.getElementById('inputPercent').value;
-      document.getElementById('usdt').innerText = document.getElementById('inputUSDT').value;
+      document.getElementById('dateRange').innerText  = document.getElementById('inputDateRange').value;
+      document.getElementById('percent').innerText    = document.getElementById('inputPercent').value;
+      document.getElementById('usdt').innerText       = document.getElementById('inputUSDT').value;
 
-      const selectedRef = document.getElementById('refSelect').value;
-      const refCode = document.getElementById('refCode');
-      const qrImage = document.getElementById('qrImage');
+      const refId   = document.getElementById('refSelect').value;
+      const refText = document.getElementById('refSelect').selectedOptions[0].textContent; // 1..12
+      document.getElementById('refText').innerText = refText === '' ? '' : refText;
 
-      if (selectedRef) {
-        refCode.innerText = selectedRef;
-        const imgPath = `./qrcodes/${selectedRef}.png`;
-        qrImage.src = imgPath;
-
-        // Проверка загрузки QR
-        qrImage.onload = () => { qrImage.style.display = 'block'; };
-        qrImage.onerror = () => {
-          qrImage.style.display = 'none';
-          console.warn(`Не найден QR: ${imgPath}`);
-        };
-      }
+      // путь к QR: рядом с index.html лежат PNG (как ты уже сделал)
+      document.getElementById('qrImg').src = refId ? `./qrcodes/${refId}.png` : '';
     }
 
+    // ====== Масштабирование карточки под ширину экрана ======
+    const BASE_W = 1188;
+    const BASE_H = 1392;
+    const stage  = document.getElementById('stage');
+    const card   = document.getElementById('card');
+
+    function fitCard() {
+      const w = stage.clientWidth;                // доступная ширина
+      const scale = Math.min(1, w / BASE_W);      // не увеличиваем сверх 1
+      card.style.transform = `scale(${scale})`;
+      stage.style.height = `${BASE_H * scale}px`; // сохраняем пропорции контейнера
+    }
+
+    window.addEventListener('load', fitCard);
+    window.addEventListener('resize', fitCard);
+
+    // ====== Скриншот в полном качестве ======
     function takeScreenshot() {
-      html2canvas(document.getElementById("card"), { scale: 2 }).then(canvas => {
+      const prev = card.style.transform;       // 1) временно убираем масштаб
+      card.style.transform = 'none';
+      stage.style.height = `${BASE_H}px`;
+
+      html2canvas(card, { scale: 2 }).then(canvas => {
         const link = document.createElement("a");
         link.download = "pnl-card.png";
-        link.href = canvas.toDataURL();
+        link.href = canvas.toDataURL("image/png");
         link.click();
+
+        // 2) возвращаем масштаб
+        card.style.transform = prev;
+        fitCard();
       });
     }
+
+    // начальные значения, чтобы сразу увидеть пример
+    document.getElementById('inputDateShared').value = '2025-08-12 18:16:34';
+    document.getElementById('inputDateRange').value  = '2025/09/18 – 2025/09/25 (UTC+8)';
+    document.getElementById('inputPercent').value    = '+165,14%';
+    document.getElementById('inputUSDT').value       = '+9 014,1 USDT';
+    document.getElementById('refSelect').value       = '1fq51';
+    updateCard();
   </script>
 </body>
 </html>
